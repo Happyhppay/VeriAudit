@@ -1,0 +1,60 @@
+# VeriAudit default configuration
+system:
+  workspace_root: "./workspace"
+  temp_dir: "/tmp/veriaudit"
+
+ledger:
+  dir: "./workspace/ledgers"
+
+index:
+  db_path: "./workspace/index.db"
+
+llm:
+  provider: "openai_compatible"
+  base_url: "${LLM_BASE_URL:-https://api.deepseek.com/v1}"
+  api_key: "${LLM_API_KEY:-}"
+  model: "${LLM_MODEL:-deepseek-chat}"
+  temperature: 0.1
+  max_tokens: 8000
+
+modes:
+  quick:
+    timeout_minutes: 30
+    sast: ["semgrep"]
+    cpg: false
+    rag: false
+    fuzz: false
+    contradiction_detection: false
+    poc_self_correction: false
+
+  standard:
+    timeout_minutes: 240
+    sast: ["semgrep", "codeql"]
+    cpg: true
+    rag: true
+    fuzz: true
+    fuzz_timeout_seconds: 3600
+    contradiction_detection: true
+    poc_self_correction_attempts: 1
+
+  deep:
+    timeout_minutes: 1440
+    sast: ["semgrep", "codeql", "cppcheck", "clang_tidy", "gitleaks"]
+    cpg: true
+    rag: true
+    fuzz: true
+    fuzz_timeout_seconds: 14400
+    contradiction_detection: true
+    poc_self_correction_attempts: 3
+
+docker:
+  images:
+    cpp_fuzz: "veriaudit/cpp-fuzz:latest"
+    php_web: "veriaudit/php-web:latest"
+    java: "veriaudit/java:latest"
+    go: "veriaudit/go:latest"
+    python: "veriaudit/python:latest"
+    callback: "veriaudit/callback-server:latest"
+
+judge:
+  rules_file: "config/judge_rules.yaml"

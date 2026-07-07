@@ -1,0 +1,25 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    clang-18 \
+    libclang-rt-18-dev \
+    libfuzzer-18-dev \
+    cmake \
+    ninja-build \
+    make \
+    git \
+    gdb \
+    ca-certificates \
+    python3 \
+    python3-pip \
+    && ln -sf clang-18 /usr/bin/clang \
+    && ln -sf clang++-18 /usr/bin/clang++ \
+    && pip3 install --break-system-packages semgrep \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CC=clang
+ENV CXX=clang++
+
+WORKDIR /workspace
