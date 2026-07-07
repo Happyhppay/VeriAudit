@@ -1,0 +1,60 @@
+# VeriAudit Default Configuration
+# Person A maintains this file. B and C reference it.
+
+# Paths
+workspace:
+  root: "./workspace"
+  repos: "./workspace/repos"
+  ledgers: "./workspace/ledgers"
+  evidence: "./workspace/evidence"
+  index_db: "./workspace/index.db"
+  temp: "/tmp/veriaudit"
+
+results_dir: "./results"
+
+# Audit modes
+modes:
+  - quick     # Skip LLM analysis, only run SAST tools
+  - standard  # Full pipeline: SAST + LLM + Judge
+
+# Finding limits
+limits:
+  max_findings_per_scan: 10000
+  max_code_snippet_lines: 20
+
+# Event Ledger
+ledger:
+  format: "jsonl"        # One JSON object per line
+  encoding: "utf-8"
+  hash_algorithm: "sha256"
+  # Hash formula (DO NOT CHANGE):
+  # SHA256(prev_hash + canonical_json(payload) + timestamp + event_type)
+
+# LLM Provider (used by Person B)
+llm:
+  provider: "openai_compatible"
+  base_url: "https://api.deepseek.com/v1"
+  model: "deepseek-chat"
+  temperature: 0.1
+  max_tokens: 8000
+  retry:
+    max_attempts: 3
+    backoff_seconds: 2
+
+# SAST Tools (used by Person B)
+tools:
+  semgrep:
+    enabled: true
+    timeout_seconds: 300
+  bandit:
+    enabled: true
+    timeout_seconds: 180
+  gitleaks:
+    enabled: true
+    timeout_seconds: 120
+
+# Web Dashboard (used by Person C)
+web:
+  host: "127.0.0.1"
+  port: 8000
+  reload: false
